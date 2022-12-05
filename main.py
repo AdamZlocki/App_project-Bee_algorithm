@@ -1,6 +1,9 @@
+from random import randint
+
+
 class Vertex:  # wierzchołek - restauracja; reprezentuje id, nazwa(łatwość wprowadzania danych przez użytkownika) i
     # informuje o swoim zapotrzebowaniu
-    def __init__(self, id, name, request):
+    def __init__(self, id, name, request=randint(100, 999)):
         self.id = id
         self.name = name
         self.visited = 0
@@ -34,8 +37,9 @@ class Truck:  # ciężarówka; zadana pojemność
 
 class Solution:  # postać rozwiązania; route to trasa w postaci listy id restauracji w kolejności odwiedzania,
     # cost to wyliczona wartość funkcji celu
-    def __init__(self, route, cost):
+    def __init__(self, route, edges, cost):
         self.route = route
+        self.edges = edges
         self.cost = cost
 
     def __eq__(self, other):
@@ -45,7 +49,7 @@ class Solution:  # postać rozwiązania; route to trasa w postaci listy id resta
             return False
 
 
-def Target_funtion(route):  #funkcja obliczająca funkcję celu
+def Target_funtion(route):  # funkcja obliczająca funkcję celu
     cost = 0
 
     return cost
