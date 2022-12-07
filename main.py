@@ -139,6 +139,7 @@ def Target_funtion(edges, penalty, w=2.68, p=20):  # funkcja obliczająca funkcj
 
 
 def main():
+    v = 40  # prędkość ciężarówki
     names = {1: "Szewska",
              2: "Floriańska",
              3: "Grodzka",
@@ -167,10 +168,14 @@ def main():
 
     for i in range(Restaurants.order()):
         for j in range(Restaurants.order()):
-            if i != j:
-                distance = uniform(0.3, 5)  # odległość między dwoma restauracjami - od 300 metrów do 5 kilometrów
-                time = distance / 50  # obliczony czas przejazdu w godzinach dla średniej prędkości 50 km/h
+            if i != j and Restaurants.matrix[i][j] == 0:
+                distance = round(uniform(0.3, 5), 2)  # odległość między dwoma restauracjami - od 300 metrów do 5
+                # kilometrów
+                time = round(distance / v, 2)  # obliczony czas przejazdu w godzinach dla średniej prędkości 50 km/h
                 Restaurants.insertEdge(vertex1_idx=i, vertex2_idx=j, edge=Edge(i, j, time=time, distance=distance))
+                Restaurants.insertEdge(vertex1_idx=j, vertex2_idx=i, edge=Edge(j, i, time=time, distance=distance))
+
+    print(0)
 
 
 if __name__ == '__main__':
