@@ -129,11 +129,12 @@ class GraphMatrix:
         return result
 
 
-def Target_funtion(edges, w=2.68, p=20):  # funkcja obliczająca funkcję celu; w = koszt paliwa za przejechanie
-    # jednego kilometra, p = godzionwe wynagordzenie kierowcy
+def Target_funtion(edges, penalty, w=2.68, p=20):  # funkcja obliczająca funkcję celu; w = koszt paliwa za przejechanie
+    # jednego kilometra, p = godzionwe wynagordzenie kierowcy, penalty = kara (1 za każdy kilogram niedostarczony do
+    # każdej restauracji)
     cost = 0
     for edge in edges:
-        cost += edge[0] * w + edge[1] * p
+        cost += edge[0] * w + edge[1] * p + penalty
     return cost
 
 
@@ -157,6 +158,7 @@ def main():
              17: "Henryka Kamińskiego"}
 
     Restaurants = GraphMatrix()
+    Truck = Truck()
     Restaurants.insertVertex(Vertex(is_base=True))
     for i in names.keys():
         vertex = Vertex(Id=i, name=names[i], is_base=False)
