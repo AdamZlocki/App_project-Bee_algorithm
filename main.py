@@ -159,12 +159,11 @@ def main():
 
     Restaurants = GraphMatrix()
     truck = Truck()
-
     Restaurants.insertVertex(Vertex(is_base=True))
     for i in names.keys():
         vertex = Vertex(Id=i, name=names[i], is_base=False)
         if vertex not in Restaurants.list:
-            Restaurants.insertVertex(Vertex(Id=i, name=names[i]))
+            Restaurants.insertVertex(vertex)
 
     for i in range(Restaurants.order()):
         for j in range(Restaurants.order()):
