@@ -158,19 +158,20 @@ def main():
              17: "Henryka Kamińskiego"}
 
     Restaurants = GraphMatrix()
-    Truck = Truck()
+    truck = Truck()
     Restaurants.insertVertex(Vertex(is_base=True))
     for i in names.keys():
         vertex = Vertex(Id=i, name=names[i], is_base=False)
-        if not vertex in Restaurants.list:
+        if vertex not in Restaurants.list:
             Restaurants.insertVertex(Vertex(Id=i, name=names[i]))
 
     for i in range(Restaurants.order()):
         for j in range(Restaurants.order()):
             if i != j:
                 distance = uniform(0.3, 5)  # odległość między dwoma restauracjami - od 300 metrów do 5 kilometrów
-                time = distance/50  # obliczony czas przejazdu w godzinach dla średniej prędkości 50 km/h
+                time = distance / 50  # obliczony czas przejazdu w godzinach dla średniej prędkości 50 km/h
                 Restaurants.insertEdge(vertex1_idx=i, vertex2_idx=j, edge=Edge(i, j, time=time, distance=distance))
+
 
 if __name__ == '__main__':
     main()
