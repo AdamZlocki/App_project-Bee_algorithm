@@ -1,4 +1,4 @@
-from random import randint, uniform
+from random import randint, uniform, choice
 
 
 class Vertex:  # wierzchołek - restauracja; reprezentuje id, nazwa(łatwość wprowadzania danych przez użytkownika) i
@@ -12,13 +12,19 @@ class Vertex:  # wierzchołek - restauracja; reprezentuje id, nazwa(łatwość w
         else:
             self.Id = 0
             self.name = "Base"
-            self.visited = 0
+            self.visited = 1
 
     def __eq__(self, other):
         if self.name == other.name or self.Id == other.Id:
             return True
         else:
             return False
+
+    def __repr__(self):
+        if self.Id != 0:
+            return f"{self.Id}, {self.request}"
+        else:
+            return f"{self.Id}"
 
     def __hash__(self):
         return hash(self.Id)
@@ -36,6 +42,9 @@ class Edge:  # połączenie między restauracjami; reprezentuje czas przejazdu i
             return True
         else:
             return False
+
+    def __repr__(self):
+        return f"({self.distance}, {self.time})"
 
 
 class Truck:  # ciężarówka; zadana pojemność
@@ -56,6 +65,12 @@ class Solution:  # postać rozwiązania; route to trasa w postaci listy id resta
         else:
             return False
 
+    def __repr__(self):
+        return f"{self.route}, {self.cost}"
+
+    def __str__(self):
+        return f"{self.route}, {self.cost}"
+
 
 class GraphMatrix:
     def __init__(self):
@@ -75,7 +90,7 @@ class GraphMatrix:
 
     def insertEdge(self, vertex1_idx, vertex2_idx, edge):
         if vertex1_idx is not None and vertex2_idx is not None:
-            self.matrix[vertex1_idx][vertex2_idx] = (edge.distance, edge.time)
+            self.matrix[vertex1_idx][vertex2_idx] = edge
 
     def deleteVertex(self, vertex):
         vertex_idx = self.getVertexIdx(vertex)
@@ -105,7 +120,7 @@ class GraphMatrix:
     def neighbours(self, vertex_idx):
         result = []
         for i in range(len(self.matrix[vertex_idx])):
-            if self.matrix[vertex_idx][i] == 1:
+            if self.matrix[vertex_idx][i]:
                 result.append(i)
         return result
 
@@ -125,17 +140,68 @@ class GraphMatrix:
         for i in range(self.order()):
             for j in range(self.order()):
                 if self.matrix[i][j]:
-                    result.append((self.list[i].key, self.list[j].key))
+                    result.append(self.matrix[i][j])
         return result
 
 
-def Target_funtion(edges, penalty, w=2.68, p=20):  # funkcja obliczająca funkcję celu; w = koszt paliwa za przejechanie
-    # jednego kilometra, p = godzionwe wynagordzenie kierowcy, penalty = kara (1 za każdy kilogram niedostarczony do
-    # każdej restauracji)
+def Target_funtion(route, edges, w=2.68, p=20):  # funkcja obliczająca funkcję celu; w = koszt paliwa za przejechanie
+    # jednego kilometra, p = godzionwe wynagordzenie kierowcy, penalty = kara
     cost = 0
+    penalty = 10 * (route.count(0) - 1)
     for edge in edges:
-        cost += edge[0] * w + edge[1] * p + penalty
-    return cost
+        cost += edge.distance * w + edge.time * p
+    cost += penalty
+    return round(cost, 2)
+
+
+def all_visited(graph: GraphMatrix):
+    result = True
+    for vertex in graph.list:
+        if vertex.visited == 0:
+            result = False
+            break
+    return result
+
+
+def find_solution(graph: GraphMatrix, truck: Truck):
+    route = [0]
+    edges = []
+    actual = 0
+    while not all_visited(graph):
+        neighbours = graph.neighbours(actual)
+        if 0 in neighbours:
+            neighbours.remove(0)
+
+        neighbours_to_delete = []
+        for neigh in neighbours:
+            if graph.getVertex(neigh).visited == 1 or graph.getVertex(neigh).request > truck.capacity:
+                neighbours_to_delete.append(neigh)
+
+        for neigh in neighbours_to_delete:
+            neighbours.remove(neigh)
+
+        if len(neighbours):
+            neighbour = choice(neighbours)
+            graph.getVertex(neighbour).visited = 1
+            truck.capacity -= graph.getVertex(neighbour).request
+        else:
+            neighbour = 0
+            truck.capacity = 3000
+
+        edges.append(graph.matrix[actual][neighbour])
+        route.append(neighbour)
+
+        actual = neighbour
+
+    cost = Target_funtion(route=route, edges=edges)
+
+    solution = Solution(route=route, edges=edges, cost=cost)
+
+    for vertex in graph.list[1:]:
+        vertex.visited = 0
+    truck.capacity = 3000
+
+    return solution
 
 
 def main():
@@ -168,14 +234,19 @@ def main():
 
     for i in range(Restaurants.order()):
         for j in range(Restaurants.order()):
-            if i != j and Restaurants.matrix[i][j] == 0:
+            if i != j and not Restaurants.matrix[i][j]:
                 distance = round(uniform(0.3, 5), 2)  # odległość między dwoma restauracjami - od 300 metrów do 5
                 # kilometrów
                 time = round(distance / v, 2)  # obliczony czas przejazdu w godzinach dla średniej prędkości 50 km/h
                 Restaurants.insertEdge(vertex1_idx=i, vertex2_idx=j, edge=Edge(i, j, time=time, distance=distance))
                 Restaurants.insertEdge(vertex1_idx=j, vertex2_idx=i, edge=Edge(j, i, time=time, distance=distance))
 
-    print(0)
+    test_solution = find_solution(Restaurants, truck)
+    print(test_solution, '\n')
+    test_solution2 = find_solution(Restaurants, truck)
+    print(test_solution2, '\n')
+    test_solution3 = find_solution(Restaurants, truck)
+    print(test_solution3, '\n')
 
 
 if __name__ == '__main__':
