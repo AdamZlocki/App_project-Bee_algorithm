@@ -168,23 +168,23 @@ def find_solution(graph: GraphMatrix, truck: Truck):
     edges = []
     actual = 0
     while not all_visited(graph):
-        neighbours = graph.neighbours(actual)
+        neighbours = graph.neighbours(actual)  # wyszukanie sąsiadów i usunięcie Bazy
         if 0 in neighbours:
             neighbours.remove(0)
 
-        neighbours_to_delete = []
+        neighbours_to_delete = []  # wyszukanie już odwiedzonych sąsiadów lub sąsiadów ze zbyt wysokim zapotrzebowaniem
         for neigh in neighbours:
             if graph.getVertex(neigh).visited == 1 or graph.getVertex(neigh).request > truck.capacity:
                 neighbours_to_delete.append(neigh)
 
-        for neigh in neighbours_to_delete:
+        for neigh in neighbours_to_delete:  # usunięcie niedozwolonych sąsiadów
             neighbours.remove(neigh)
 
-        if len(neighbours):
+        if len(neighbours):  # jeśli zostali jeszcze jacyś sąsiedzi wylosowanie nastepnego wierzchołka
             neighbour = choice(neighbours)
             graph.getVertex(neighbour).visited = 1
             truck.capacity -= graph.getVertex(neighbour).request
-        else:
+        else:  # jeśli nie wybranie 0
             neighbour = 0
             truck.capacity = 3000
 
@@ -197,7 +197,7 @@ def find_solution(graph: GraphMatrix, truck: Truck):
 
     solution = Solution(route=route, edges=edges, cost=cost)
 
-    for vertex in graph.list[1:]:
+    for vertex in graph.list[1:]:  # reset grafu i ciężarówki
         vertex.visited = 0
     truck.capacity = 3000
 
