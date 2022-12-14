@@ -274,11 +274,6 @@ def bee_algorythm(graph: GraphMatrix, truck: Truck, num_of_iterations: int = 10,
     return solutions[0]
 
 
-
-
-
-
-
 def main():
     v = 40  # prędkość ciężarówki
     names = {1: "Szewska",
