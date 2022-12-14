@@ -259,11 +259,12 @@ def bee_algorythm(graph: GraphMatrix, truck: Truck, num_of_iterations: int = 10,
 
         for solution in solutions:  # utworzenie sąsiedztwa każdego rozwiązania i obliczenie średniego kosztu w
             # sąsiedztwie
-            solution.neighbourhood = neighbourhood(graph=graph, solution=solution, size=size_of_neighbourhood)
-            neighbourhood_cost_list = []
-            for neighbour in solution.neighbourhood:
-                neighbourhood_cost_list.append(neighbour.cost)
-            solution.neighbourhood_mean_cost = mean(neighbourhood_cost_list)
+            if not solution.neighbourhood:
+                solution.neighbourhood = neighbourhood(graph=graph, solution=solution, size=size_of_neighbourhood)
+                neighbourhood_cost_list = []
+                for neighbour in solution.neighbourhood:
+                    neighbourhood_cost_list.append(neighbour.cost)
+                solution.neighbourhood_mean_cost = mean(neighbourhood_cost_list)
 
         best_solutions = []  # znalezienie oczekiwanej liczby najlepszych rozwiązań
         while len(best_solutions) < num_of_bests:
