@@ -204,6 +204,44 @@ def find_solution(graph: GraphMatrix, truck: Truck):
     return solution
 
 
+def neighbourhood(graph: GraphMatrix, solution: Solution, size: int = 5):
+    n = len(solution.route)
+    neighbours = []
+    while len(neighbours) < size:  # pętla powtarzana do utworzenia oczekiwanej liczby sąsiadów
+        a, b = 0, 0
+        is_0_between = True
+        while is_0_between:  # podpętla wykonuje się dopóki między wylosowanymi do podmiany punktami występuje zero
+            is_0_between = False
+            a, b = randint(1, n - 1), randint(1, n - 1)  # wylosowanie punktów do podmiany
+            if a == b:  # jeśli wylosowane punkty są identyczne nie ma sensu kontynuować podpętli
+                is_0_between = True
+            else:
+                if a > b:  # ustalenie kolejności punktów: a - mniejszy, b - większy
+                    a, b = b, a
+                for i in range(a, b + 1):  # sprawdzenie czy między wylosowanymi punktami lub któryś z nich jest zero
+                    if solution.route[i] == 0:
+                        is_0_between = True
+                        break
+
+        neighbour_route = solution.route.copy()  # podmiana wybranych wierzchołków
+        neighbour_route[a], neighbour_route[b] = neighbour_route[b], neighbour_route[a]
+
+        neighbour_edges = []  # utworzenie nowej listy krawędzi
+        for i in range(1, len(neighbour_route)):
+            neighbour_edges.append(graph.matrix[neighbour_route[i - 1]][neighbour_route[i]])
+
+        neighbour_cost = Target_funtion(neighbour_route, neighbour_edges)  # obliczenie nowego kosztu
+
+        neighbour = Solution(route=neighbour_route, edges=neighbour_edges, cost=neighbour_cost)
+        if neighbour not in neighbours:  # wstawienie nowego sąsiada jeśli nie ma go w sąsiedztwie
+            neighbours.append(neighbour)
+
+    return neighbours
+
+
+def
+
+
 def main():
     v = 40  # prędkość ciężarówki
     names = {1: "Szewska",
@@ -243,10 +281,9 @@ def main():
 
     test_solution = find_solution(Restaurants, truck)
     print(test_solution, '\n')
-    test_solution2 = find_solution(Restaurants, truck)
-    print(test_solution2, '\n')
-    test_solution3 = find_solution(Restaurants, truck)
-    print(test_solution3, '\n')
+    test_neighbours = neighbourhood(graph=Restaurants, solution=test_solution)
+    for i in range(len(test_neighbours)):
+        print(test_neighbours[i])
 
 
 if __name__ == '__main__':
