@@ -60,7 +60,6 @@ class Solution:  # postać rozwiązania; route to trasa w postaci listy id resta
         self.edges = edges
         self.cost = cost
         self.neighbourhood = []
-        self.neighbourhood_mean_cost = 0
 
     def __eq__(self, other):
         if self.route == other.route:
@@ -75,7 +74,7 @@ class Solution:  # postać rozwiązania; route to trasa w postaci listy id resta
         return f"{self.route}, {self.cost}"
 
     def __gt__(self, other):
-        if self.neighbourhood_mean_cost > other.neighbourhood_mean_cost:
+        if self.cost > other.cost:
             return True
         else:
             return False
@@ -248,31 +247,39 @@ def neighbourhood(graph: GraphMatrix, solution: Solution, size: int = 5):
     return neighbours
 
 
-def bee_algorythm(graph: GraphMatrix, truck: Truck, num_of_iterations: int = 10, size_of_iteration: int = 5, num_of_bests: int = 2, size_of_neighbourhood: int = 10):
+def bee_algorythm(graph: GraphMatrix, truck: Truck, num_of_iterations: int = 10, size_of_iteration: int = 5,
+                  num_of_bests: int = 2, size_of_neighbourhood: int = 10):
     solutions = []
     counter_of_iterations = 0
+    best = 0
     while counter_of_iterations < num_of_iterations:  # dopóki nie wykonano oczekiwanej liczby iteracji powtarzamy
         while len(solutions) < size_of_iteration:  # utworzenie zadanej ilości początkowych rozwiązań
             sol = find_solution(graph=graph, truck=truck)
             if sol not in solutions:
                 solutions.append(sol)
 
-        for solution in solutions:  # utworzenie sąsiedztwa każdego rozwiązania i obliczenie średniego kosztu w
-            # sąsiedztwie
-            if not solution.neighbourhood:
-                solution.neighbourhood = neighbourhood(graph=graph, solution=solution, size=size_of_neighbourhood)
-                neighbourhood_cost_list = []
-                for neighbour in solution.neighbourhood:
-                    neighbourhood_cost_list.append(neighbour.cost)
-                solution.neighbourhood_mean_cost = mean(neighbourhood_cost_list)
+        if counter_of_iterations == 0:
+            print('Populacja początkowa:')
+            for i in range(size_of_iteration):
+                print(solutions[i])
+        solutions_sorted = []  # posortowanie rozwiązań i zapamiętanie najlepszgo
+        while len(solutions_sorted) < size_of_iteration:
+            solutions_sorted.append(solutions.pop(solutions.index(min(solutions))))
+        solutions = solutions_sorted.copy()
+        best = solutions[0]
 
-        best_solutions = []  # znalezienie oczekiwanej liczby najlepszych rozwiązań
-        while len(best_solutions) < num_of_bests:
-            best_solutions.append(solutions.pop(solutions.index(min(solutions))))
-        solutions = best_solutions
+        solutions = solutions[:num_of_bests]
+        for solution in solutions:  # utworzenie sąsiedztwa wybranych najlepszych rozwiązań i
+            # ewentualne zastąpienie ich ich najlepszymi sąsiadami
+            solution.neighbourhood = []
+            solution.neighbourhood = neighbourhood(graph=graph, solution=solution, size=size_of_neighbourhood)
+            best_neighbour = solution.neighbourhood[solution.neighbourhood.index(min(solution.neighbourhood))]
+            if best_neighbour < solution:
+                solutions[solutions.index(solution)] = best_neighbour
+
         counter_of_iterations += 1
 
-    return solutions[0]
+    return best
 
 
 def main():
@@ -319,7 +326,7 @@ def main():
     #     print(test_neighbours[i])
 
     test_solution = bee_algorythm(graph=Restaurants, truck=truck)
-    print(test_solution)
+    print('Najlepsze znalezione rozwiązanie:\n', test_solution)
 
 
 if __name__ == '__main__':
