@@ -29,7 +29,7 @@ odleglosci.place(x=5, y=52)
 label_odleglosci = Label(window, text='Podaj dane:').place(x=5, y=30)
 
 label_sciezka = Label(window, text='Podaj ścieżkę do pliku:').place(x=5, y=140)
-sciezka = Entry(window, width=30)
+sciezka = Entry(window, width=30, state=DISABLED)
 sciezka.place(x=5, y=160)
 
 liczba_iteracji_box = Entry(window)
@@ -53,18 +53,20 @@ label_rozmiar_sasiedztwa_elit = Label(window, text='Rozmiar sąsiedztwa\nelitarn
 label_max_dlugosc_zycia = Label(window, text='Maksymalna długość\nżycia rozwiązania:', justify=RIGHT).place(x=200,
                                                                                                             y=195)
 
-def run_algorithm():
 
-    liczba_iteracji = int(liczba_iteracji_box.get())
-    wielkosc_populacji = int(wielkosc_populacji_box.get())
-    liczba_elitarnych = int(liczba_elitarnych_box.get())
-    liczba_najlepszych = int(liczba_najlepszych_box.get())
-    rozmiar_sasiedztwa_elit = int(rozmiar_sasiedztwa_elit_box.get())
-    max_dlugosc_zycia = int(max_dlugosc_zycia_box.get())
+def run_algorithm():
+    if liczba_iteracji_box.get() != '' and wielkosc_populacji_box.get() != '' and liczba_elitarnych_box.get() != '' \
+            and liczba_najlepszych_box.get() != '' and rozmiar_sasiedztwa_elit_box.get() != '' and \
+            max_dlugosc_zycia_box.get() != '':
+        liczba_iteracji = int(liczba_iteracji_box.get())
+        wielkosc_populacji = int(wielkosc_populacji_box.get())
+        liczba_elitarnych = int(liczba_elitarnych_box.get())
+        liczba_najlepszych = int(liczba_najlepszych_box.get())
+        rozmiar_sasiedztwa_elit = int(rozmiar_sasiedztwa_elit_box.get())
+        max_dlugosc_zycia = int(max_dlugosc_zycia_box.get())
 
 
 uruchom = Button(window, text='Uruchom', command=run_algorithm)
 uruchom.place(x=350, y=260)
-
 
 window.mainloop()
