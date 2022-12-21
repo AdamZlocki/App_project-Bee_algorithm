@@ -154,7 +154,7 @@ class GraphMatrix:
 def Target_funtion(route, edges, w=2.68, p=20):  # funkcja obliczająca funkcję celu; w = koszt paliwa za przejechanie
     # jednego kilometra, p = godzionwe wynagordzenie kierowcy, penalty = kara
     cost = 0
-    penalty = 10 * (route.count(0) - 1)
+    penalty = 10 * (route.count(0) - 2)
     for edge in edges:
         cost += edge.distance * w + edge.time * p
     cost += penalty
@@ -246,8 +246,8 @@ def neighbourhood(graph: GraphMatrix, solution: Solution, size: int = 5):
     return neighbours
 
 
-def bee_algorythm(graph: GraphMatrix, truck: Truck, num_of_iterations: int = 10, size_of_iteration: int = 5,
-                  num_of_bests: int = 2, size_of_neighbourhood: int = 10):
+def bee_algorythm(graph: GraphMatrix, truck: Truck, num_of_iterations: int = 10, size_of_iteration: int = 10,
+                  num_of_elite: int = 2, num_of_bests: int = 3, size_of_neighbourhood: int = 10):
     solutions = []
     counter_of_iterations = 0
     best = 0
@@ -267,17 +267,34 @@ def bee_algorythm(graph: GraphMatrix, truck: Truck, num_of_iterations: int = 10,
         solutions = solutions_sorted.copy()
         best = solutions[0]
 
-        solutions = solutions[:num_of_bests]
-        for solution in solutions:  # utworzenie sąsiedztwa wybranych najlepszych rozwiązań i
-            # ewentualne zastąpienie ich ich najlepszymi sąsiadami
+        elite_solutions = []  # utworzenie listy rozwiązań elitarnych
+        while len(elite_solutions) < num_of_elite:
+            elite_solutions.append(solutions.pop(solutions.index(min(solutions))))
+
+        best_solutions = []  # utworzenie listy rozwiązań najlepszych (gorsze od elitarych)
+        while len(best_solutions) < num_of_bests:
+            best_solutions.append(solutions.pop(solutions.index(min(solutions))))
+
+        for solution in elite_solutions:  # utworzenie sąsiedztwa rozwiązań elitarnych i ewentualne zastąpienie ich ich
+            # najlepszymi sąsiadami
             solution.neighbourhood = []
             solution.neighbourhood = neighbourhood(graph=graph, solution=solution, size=size_of_neighbourhood)
             best_neighbour = solution.neighbourhood[solution.neighbourhood.index(min(solution.neighbourhood))]
             if best_neighbour < solution:
-                solutions[solutions.index(solution)] = best_neighbour
+                elite_solutions[elite_solutions.index(solution)] = best_neighbour
+
+        for solution in best_solutions:  # utworzenie sąsiedztwa rozwiązań najlepszych i ewentualne zastąpienie ich ich
+            # najlepszymi sąsiadami
+            solution.neighbourhood = []
+            solution.neighbourhood = neighbourhood(graph=graph, solution=solution, size=round(size_of_neighbourhood/2))
+            best_neighbour = solution.neighbourhood[solution.neighbourhood.index(min(solution.neighbourhood))]
+            if best_neighbour < solution:
+                best_solutions[best_solutions.index(solution)] = best_neighbour
+
+        solutions = elite_solutions + best_solutions
 
         solutions_sorted = []  # posortowanie rozwiązań i zapamiętanie najlepszgo
-        while len(solutions_sorted) < num_of_bests:
+        while len(solutions_sorted) < num_of_bests + num_of_elite:
             solutions_sorted.append(solutions.pop(solutions.index(min(solutions))))
         solutions = solutions_sorted.copy()
         if solutions[0] < best:
