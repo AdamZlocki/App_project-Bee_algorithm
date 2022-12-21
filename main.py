@@ -276,6 +276,13 @@ def bee_algorythm(graph: GraphMatrix, truck: Truck, num_of_iterations: int = 10,
             if best_neighbour < solution:
                 solutions[solutions.index(solution)] = best_neighbour
 
+        solutions_sorted = []  # posortowanie rozwiązań i zapamiętanie najlepszgo
+        while len(solutions_sorted) < num_of_bests:
+            solutions_sorted.append(solutions.pop(solutions.index(min(solutions))))
+        solutions = solutions_sorted.copy()
+        if solutions[0] < best:
+            best = solutions[0]
+
         counter_of_iterations += 1
 
     return best
