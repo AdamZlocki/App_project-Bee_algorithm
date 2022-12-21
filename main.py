@@ -1,9 +1,9 @@
 from random import randint, uniform, choice
 
 
-class Vertex:  # wierzchołek - restauracja; reprezentuje id, nazwa(łatwość wprowadzania danych przez użytkownika) i
+class Vertex:  # wierzchołek - restauracja; reprezentuje id, nazwa (łatwość wprowadzania danych przez użytkownika) i
     # informuje o swoim zapotrzebowaniu
-    def __init__(self, Id=None, name=None, is_base=False):
+    def __init__(self, Id=None, name=' ', is_base=False):
         if not is_base:
             self.Id = Id
             self.name = name
@@ -15,7 +15,7 @@ class Vertex:  # wierzchołek - restauracja; reprezentuje id, nazwa(łatwość w
             self.visited = 1
 
     def __eq__(self, other):
-        if self.name == other.name or self.Id == other.Id:
+        if self.Id == other.Id:
             return True
         else:
             return False
