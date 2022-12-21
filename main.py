@@ -59,6 +59,7 @@ class Solution:  # postać rozwiązania; route to trasa w postaci listy id resta
         self.edges = edges
         self.cost = cost
         self.neighbourhood = []
+        self.LT = 0
 
     def __eq__(self, other):
         if self.route == other.route:
@@ -247,11 +248,17 @@ def neighbourhood(graph: GraphMatrix, solution: Solution, size: int = 5):
 
 
 def bee_algorythm(graph: GraphMatrix, truck: Truck, num_of_iterations: int = 10, size_of_iteration: int = 10,
-                  num_of_elite: int = 2, num_of_bests: int = 3, size_of_neighbourhood: int = 10):
+                  num_of_elite: int = 2, num_of_bests: int = 3, size_of_neighbourhood: int = 10, max_LT: int = 3):
     solutions = []
     counter_of_iterations = 0
     best = 0
     while counter_of_iterations < num_of_iterations:  # dopóki nie wykonano oczekiwanej liczby iteracji powtarzamy
+        if solutions:  # w przypadku gdy coś znajduje się w liście rozwiązań - usunięcie rozwiązń, które przekroczyły
+            # maksymalną długość życia
+            for solution in solutions:
+                if solution.LT > max_LT:
+                    solutions.remove(solution)
+
         while len(solutions) < size_of_iteration:  # utworzenie zadanej ilości początkowych rozwiązań
             sol = find_solution(graph=graph, truck=truck)
             if sol not in solutions:
@@ -299,6 +306,9 @@ def bee_algorythm(graph: GraphMatrix, truck: Truck, num_of_iterations: int = 10,
         solutions = solutions_sorted.copy()
         if solutions[0] < best:
             best = solutions[0]
+
+        for solution in solutions:
+            solution.LT += 1
 
         counter_of_iterations += 1
 
