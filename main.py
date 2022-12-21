@@ -1,5 +1,4 @@
 from random import randint, uniform, choice
-from statistics import mean
 
 
 class Vertex:  # wierzchołek - restauracja; reprezentuje id, nazwa(łatwość wprowadzania danych przez użytkownika) i
