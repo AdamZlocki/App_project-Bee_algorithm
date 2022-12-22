@@ -264,10 +264,11 @@ def bee_algorythm(graph: GraphMatrix, truck: Truck, num_of_iterations: int = 10,
             if sol not in solutions:
                 solutions.append(sol)
 
-        if counter_of_iterations == 0:
-            print('Populacja początkowa:')
-            for i in range(size_of_iteration):
-                print(solutions[i])
+        # if counter_of_iterations == 0:
+        #     print('Populacja początkowa:')
+        #     for i in range(size_of_iteration):
+        #         print(solutions[i])
+
         solutions_sorted = []  # posortowanie rozwiązań i zapamiętanie najlepszgo
         while len(solutions_sorted) < size_of_iteration:
             solutions_sorted.append(solutions.pop(solutions.index(min(solutions))))
