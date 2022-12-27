@@ -1,5 +1,4 @@
 from tkinter import filedialog
-
 from main import *
 from tkinter import *
 
@@ -31,8 +30,9 @@ plik = Radiobutton(window, text='Z pliku', variable=wczytywanie, value=1, comman
 plik.place(x=70, y=5)
 
 odleglosci = Text(window, height=10, width=20)
-odleglosci.place(x=5, y=52)
-label_odleglosci = Label(window, text='Podaj dane:').place(x=5, y=30)
+odleglosci.place(x=5, y=67)
+label_odleglosci = Label(window, text="""Podaj dane (zapotrzebowanie\noddziel '|', a odległości ','):""",
+                         justify=LEFT).place(x=5, y=30)
 
 label_sciezka = Label(window, text='Podaj ścieżkę do pliku:').place(x=220, y=30)
 sciezka = Entry(window, width=40, state=DISABLED)
@@ -113,6 +113,8 @@ def run_algorithm():
     matrix = []
     distance_matrix = []
     if wczytywanie.get() == 0:  # jeśli wczytujemy z ręcznie wpisanych danych
+        data = odleglosci.get("1.0", END)
+        print(data)
         return 0
     elif wczytywanie.get() == 1:  # jeśli wczytujemy z pliku
         file = sciezka.get()
