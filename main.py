@@ -326,9 +326,6 @@ def save_data_from_txt_to_matrix(file_name):
         names.append(line[0])
         requests.append(line[1])
         distance_matrix.append(line[2].strip().split(','))
-    # names = [line.strip().split(' # ', 2)[0] for line in f]
-    # request = [line.strip().split(' # ', 2)[1] for line in f]
-    # distance_matrix = [line.strip().split(' # ', 2)[2].strip().split(',') for line in f]
 
     return names, requests, distance_matrix
 
