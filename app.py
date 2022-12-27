@@ -3,6 +3,7 @@ from main import *
 from tkinter import *
 
 window = Tk()
+window.title("Algorytm pszczeli")
 window.geometry("850x300")
 
 
@@ -34,7 +35,7 @@ odleglosci.place(x=5, y=69)
 label_odleglosci = Label(window, text="""Podaj dane (zapotrzebowanie\noddziel ' # ', a odległości ','):""",
                          justify=LEFT).place(x=5, y=30)
 
-label_sciezka = Label(window, text='Podaj ścieżkę do pliku:').place(x=220, y=5)
+label_sciezka = Label(window, text='Podaj ścieżkę do pliku .txt:').place(x=220, y=5)
 sciezka = Entry(window, width=40, state=DISABLED)
 sciezka.place(x=220, y=27)
 
