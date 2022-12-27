@@ -1,14 +1,14 @@
-from random import randint, uniform, choice
+from random import randint, choice
 
 
 class Vertex:  # wierzchołek - restauracja; reprezentuje id, nazwa (łatwość wprowadzania danych przez użytkownika) i
     # informuje o swoim zapotrzebowaniu
-    def __init__(self, Id=None, name=' ', is_base=False):
+    def __init__(self, Id=None, name=' ', request=randint(100, 999), is_base=False):
         if not is_base:
             self.Id = Id
             self.name = name
             self.visited = 0
-            self.request = randint(100, 999)
+            self.request = request
         else:
             self.Id = 0
             self.name = "Base"
@@ -318,9 +318,19 @@ def bee_algorythm(graph: GraphMatrix, truck: Truck, num_of_iterations: int = 10,
 
 def save_data_from_txt_to_matrix(file_name):
     f = open(file_name, 'r')
-    distance_matrix = [line.strip().split() for line in f]
+    splitted = [line.strip().split(' # ', 2) for line in f]
+    names = []
+    requests = []
+    distance_matrix = []
+    for line in splitted:
+        names.append(line[0])
+        requests.append(line[1])
+        distance_matrix.append(line[2].strip().split(','))
+    # names = [line.strip().split(' # ', 2)[0] for line in f]
+    # request = [line.strip().split(' # ', 2)[1] for line in f]
+    # distance_matrix = [line.strip().split(' # ', 2)[2].strip().split(',') for line in f]
 
-    return distance_matrix
+    return names, requests, distance_matrix
 
 
 def is_matrix_square(matrix):
@@ -333,6 +343,19 @@ def is_matrix_square(matrix):
 
 def convert_matrix_elements_to_int(matrix):
     return [list(map(int, row)) for row in matrix]
+
+
+def get_data(matrix):
+    names = []
+    requests = []
+    distance_matrix = []
+    matrix = matrix.splitlines()
+    for line in matrix:
+        names.append(line.split(' # ', 2)[0])
+        requests.append(line.split(' # ', 2)[1].strip())
+        distance_matrix.append(line.split(' # ', 2)[2].strip().split(','))
+
+    return names, requests, distance_matrix
 
 
 def main():
@@ -390,7 +413,6 @@ def main():
 
     if is_matrix_square(matrix):
         matrix = convert_matrix_elements_to_int(matrix)
-        print_matrix(matrix)
     else:
         print(f"Macierz z pliku '{actual_file}' nie jest kwadratowa!")
 

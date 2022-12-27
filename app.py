@@ -29,14 +29,14 @@ recznie.place(x=5, y=5)
 plik = Radiobutton(window, text='Z pliku', variable=wczytywanie, value=1, command=insert_data_file)
 plik.place(x=70, y=5)
 
-odleglosci = Text(window, height=10, width=20)
-odleglosci.place(x=5, y=67)
-label_odleglosci = Label(window, text="""Podaj dane (zapotrzebowanie\noddziel '|', a odległości ','):""",
+odleglosci = Text(window, height=10, width=40)
+odleglosci.place(x=5, y=69)
+label_odleglosci = Label(window, text="""Podaj dane (zapotrzebowanie\noddziel ' # ', a odległości ','):""",
                          justify=LEFT).place(x=5, y=30)
 
-label_sciezka = Label(window, text='Podaj ścieżkę do pliku:').place(x=220, y=30)
+label_sciezka = Label(window, text='Podaj ścieżkę do pliku:').place(x=220, y=5)
 sciezka = Entry(window, width=40, state=DISABLED)
-sciezka.place(x=220, y=52)
+sciezka.place(x=220, y=27)
 
 liczba_iteracji_box = Entry(window, width=10)
 liczba_iteracji_box.place(x=720, y=5)
@@ -64,8 +64,16 @@ label_max_dlugosc_zycia = Label(window, text='Maksymalna długość\nżycia rozw
                                                      y=195)
 
 label_zle_dane_plik = Label(window, text=f"Macierz z pliku nie jest kwadratowa!", justify=RIGHT)
-label_zle_dane_plik.place(x=220, y=70)
+label_zle_dane_plik.place(x=220, y=47)
 label_zle_dane_plik.place_forget()
+
+label_zle_dane = Label(window, text=f"Podana macierz\nnie jest kwadratowa!", justify=LEFT)
+label_zle_dane.place(x=330, y=67)
+label_zle_dane.place_forget()
+
+label_brak_danych = Label(window, text=f"Podaj dane!", justify=LEFT)
+label_brak_danych.place(x=330, y=67)
+label_brak_danych.place_forget()
 
 
 def read_parameters():
@@ -112,43 +120,56 @@ def run_algorithm():
     v = 40  # prędkość ciężarówki
     matrix = []
     distance_matrix = []
+    names = []
+    requests = []
     if wczytywanie.get() == 0:  # jeśli wczytujemy z ręcznie wpisanych danych
-        data = odleglosci.get("1.0", END)
-        print(data)
-        return 0
+        if odleglosci.get("1.0", END) == '\n':
+            label_brak_danych.place(x=330, y=67)
+        else:
+            label_brak_danych.place_forget()
+            data = odleglosci.get("1.0", 'end-1c')
+            names, requests, matrix = get_data(data)
+            if is_matrix_square(matrix):
+                label_zle_dane.place_forget()
+                distance_matrix = convert_matrix_elements_to_int(matrix)
+            else:
+                label_zle_dane.place(x=330, y=67)
+                return 0
+
     elif wczytywanie.get() == 1:  # jeśli wczytujemy z pliku
         file = sciezka.get()
-        matrix = save_data_from_txt_to_matrix(file)
+        names, requests, matrix = save_data_from_txt_to_matrix(file)
         if is_matrix_square(matrix):
-            label_zle_dane_plik.pack_forget()
+            label_zle_dane_plik.place_forget()
             distance_matrix = convert_matrix_elements_to_int(matrix)
+            print(distance_matrix)
         else:
             label_zle_dane_plik.place(x=220, y=70)
-
-            print(f"Macierz z pliku '{file}' nie jest kwadratowa!")
             return 0
+    else:
+        return 0
+    if distance_matrix:
+        for i in range(len(matrix)):  # uzupełnienie listy wierzchołków
+            if i == 0:
+                Restaurants.insertVertex(Vertex(is_base=True))
+            else:
+                Restaurants.insertVertex(Vertex(Id=i, name=names[i], request=int(requests[i])))
 
-    for i in range(len(matrix)):  # uzupełnienie listy wierzchołków
-        if i == 0:
-            Restaurants.insertVertex(Vertex(is_base=True))
-        else:
-            Restaurants.insertVertex(Vertex(Id=i, name=str(i)))
+        for i in range(Restaurants.order()):  # obliczenie czasu i dodanie wszystkich krawędzi
+            for j in range(Restaurants.order()):
+                distance = distance_matrix[i][j]
+                time = round(distance / v, 2)
+                Restaurants.insertEdge(vertex1_idx=i, vertex2_idx=j, edge=Edge(i, j, time=time, distance=distance))
+                Restaurants.insertEdge(vertex1_idx=j, vertex2_idx=i, edge=Edge(j, i, time=time, distance=distance))
 
-    for i in range(Restaurants.order()):  # obliczenie czasu i dodanie wszystkich krawędzi
-        for j in range(Restaurants.order()):
-            distance = distance_matrix[i][j]
-            time = round(distance / v, 2)
-            Restaurants.insertEdge(vertex1_idx=i, vertex2_idx=j, edge=Edge(i, j, time=time, distance=distance))
-            Restaurants.insertEdge(vertex1_idx=j, vertex2_idx=i, edge=Edge(j, i, time=time, distance=distance))
-
-    solution = bee_algorythm(Restaurants, truck=truck, num_of_iterations=liczba_iteracji,
-                             size_of_iteration=wielkosc_populacji, num_of_elite=liczba_elitarnych,
-                             num_of_bests=liczba_najlepszych, size_of_neighbourhood=rozmiar_sasiedztwa_elit,
-                             max_LT=max_dlugosc_zycia)
-    trasa.delete("1.0", END)
-    trasa.insert(END, solution.route)
-    wynik.delete("1.0", END)
-    wynik.insert(END, solution.cost)
+        solution = bee_algorythm(Restaurants, truck=truck, num_of_iterations=liczba_iteracji,
+                                 size_of_iteration=wielkosc_populacji, num_of_elite=liczba_elitarnych,
+                                 num_of_bests=liczba_najlepszych, size_of_neighbourhood=rozmiar_sasiedztwa_elit,
+                                 max_LT=max_dlugosc_zycia)
+        trasa.delete("1.0", END)
+        trasa.insert(END, solution.route)
+        wynik.delete("1.0", END)
+        wynik.insert(END, solution.cost)
 
 
 trasa = Text(window, height=1, width=55)
