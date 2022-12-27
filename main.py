@@ -316,51 +316,83 @@ def bee_algorythm(graph: GraphMatrix, truck: Truck, num_of_iterations: int = 10,
     return best
 
 
+def save_data_from_txt_to_matrix(file_name):
+    f = open(file_name, 'r')
+    distance_matrix = [line.strip().split() for line in f]
+
+    return distance_matrix
+
+
+def is_matrix_square(matrix):
+    N = len(matrix)
+    for row in range(N):
+        if len(matrix[row]) != N:
+            return False
+    return True
+
+
+def convert_matrix_elements_to_int(matrix):
+    return [list(map(int, row)) for row in matrix]
+
+
 def main():
-    v = 40  # prędkość ciężarówki
-    names = {1: "Szewska",
-             2: "Floriańska",
-             3: "Grodzka",
-             4: "Pawia",
-             5: "Jasnogórska",
-             6: "Wadowicka",
-             7: "Aleja Generała Tadeusza Bora-K",
-             8: "Stawowa",
-             9: "Pilotów",
-             10: "Mieczysława Medwieckiego",
-             11: "Podgórska",
-             12: "Wielicka",
-             13: "Opolska",
-             14: "Tadeusza Śliwiaka",
-             15: "Aleja Pokoju",
-             16: "Stanisława Stojałowskiego",
-             17: "Henryka Kamińskiego"}
+    # v = 40  # prędkość ciężarówki
+    # names = {1: "Szewska",
+    #          2: "Floriańska",
+    #          3: "Grodzka",
+    #          4: "Pawia",
+    #          5: "Jasnogórska",
+    #          6: "Wadowicka",
+    #          7: "Aleja Generała Tadeusza Bora-K",
+    #          8: "Stawowa",
+    #          9: "Pilotów",
+    #          10: "Mieczysława Medwieckiego",
+    #          11: "Podgórska",
+    #          12: "Wielicka",
+    #          13: "Opolska",
+    #          14: "Tadeusza Śliwiaka",
+    #          15: "Aleja Pokoju",
+    #          16: "Stanisława Stojałowskiego",
+    #          17: "Henryka Kamińskiego"}
+    #
+    # Restaurants = GraphMatrix()
+    # truck = Truck()
+    # Restaurants.insertVertex(Vertex(is_base=True))
+    # for i in names.keys():
+    #     vertex = Vertex(Id=i, name=names[i], is_base=False)
+    #     if vertex not in Restaurants.list:
+    #         Restaurants.insertVertex(vertex)
+    #
+    # for i in range(Restaurants.order()):
+    #     for j in range(Restaurants.order()):
+    #         if i != j and not Restaurants.matrix[i][j]:
+    #             distance = round(uniform(0.3, 5), 2)  # odległość między dwoma restauracjami - od 300 metrów do 5
+    #             # kilometrów
+    #             time = round(distance / v, 2)  # obliczony czas przejazdu w godzinach dla średniej prędkości 50 km/h
+    #             Restaurants.insertEdge(vertex1_idx=i, vertex2_idx=j, edge=Edge(i, j, time=time, distance=distance))
+    #             Restaurants.insertEdge(vertex1_idx=j, vertex2_idx=i, edge=Edge(j, i, time=time, distance=distance))
+    #
+    # # test_solution = find_solution(Restaurants, truck)
+    # # print(test_solution, '\n')
+    # # test_neighbours = neighbourhood(graph=Restaurants, solution=test_solution)
+    # # for i in range(len(test_neighbours)):
+    # #     print(test_neighbours[i])
+    #
+    # test_solution = bee_algorythm(graph=Restaurants, truck=truck)
+    # print('Najlepsze znalezione rozwiązanie:\n', test_solution)
 
-    Restaurants = GraphMatrix()
-    truck = Truck()
-    Restaurants.insertVertex(Vertex(is_base=True))
-    for i in names.keys():
-        vertex = Vertex(Id=i, name=names[i], is_base=False)
-        if vertex not in Restaurants.list:
-            Restaurants.insertVertex(vertex)
+    file_1 = 'Dane_1.txt'
+    file_2 = r'C:\Users\adamz\Downloads\Dane_2.txt'
+    file_3 = r'C:\Users\adamz\Downloads\Dane_3.txt'
 
-    for i in range(Restaurants.order()):
-        for j in range(Restaurants.order()):
-            if i != j and not Restaurants.matrix[i][j]:
-                distance = round(uniform(0.3, 5), 2)  # odległość między dwoma restauracjami - od 300 metrów do 5
-                # kilometrów
-                time = round(distance / v, 2)  # obliczony czas przejazdu w godzinach dla średniej prędkości 50 km/h
-                Restaurants.insertEdge(vertex1_idx=i, vertex2_idx=j, edge=Edge(i, j, time=time, distance=distance))
-                Restaurants.insertEdge(vertex1_idx=j, vertex2_idx=i, edge=Edge(j, i, time=time, distance=distance))
+    actual_file = file_3
+    matrix = save_data_from_txt_to_matrix(actual_file)
 
-    # test_solution = find_solution(Restaurants, truck)
-    # print(test_solution, '\n')
-    # test_neighbours = neighbourhood(graph=Restaurants, solution=test_solution)
-    # for i in range(len(test_neighbours)):
-    #     print(test_neighbours[i])
-
-    test_solution = bee_algorythm(graph=Restaurants, truck=truck)
-    print('Najlepsze znalezione rozwiązanie:\n', test_solution)
+    if is_matrix_square(matrix):
+        matrix = convert_matrix_elements_to_int(matrix)
+        print_matrix(matrix)
+    else:
+        print(f"Macierz z pliku '{actual_file}' nie jest kwadratowa!")
 
 
 if __name__ == '__main__':

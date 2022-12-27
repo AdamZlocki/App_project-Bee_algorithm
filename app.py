@@ -1,3 +1,5 @@
+from tkinter import filedialog
+
 from main import *
 from tkinter import *
 
@@ -15,6 +17,10 @@ def insert_data_file():
     if wczytywanie.get() == 1:
         odleglosci['state'] = DISABLED
         sciezka['state'] = NORMAL
+        file = filedialog.askopenfilename(initialdir="/", title="Open Text file", filetypes=(("Text Files", "*.txt"),))
+        if sciezka.get() != '':
+            sciezka.delete(0, END)
+        sciezka.insert(END, file)
 
 
 wczytywanie = IntVar()
@@ -29,7 +35,7 @@ odleglosci.place(x=5, y=52)
 label_odleglosci = Label(window, text='Podaj dane:').place(x=5, y=30)
 
 label_sciezka = Label(window, text='Podaj ścieżkę do pliku:').place(x=220, y=30)
-sciezka = Entry(window, width=30, state=DISABLED)
+sciezka = Entry(window, width=40, state=DISABLED)
 sciezka.place(x=220, y=52)
 
 liczba_iteracji_box = Entry(window, width=10)
@@ -57,9 +63,13 @@ label_max_dlugosc_zycia = Label(window, text='Maksymalna długość\nżycia rozw
                                 justify=RIGHT).place(x=544,
                                                      y=195)
 
+label_zle_dane_plik = Label(window, text=f"Macierz z pliku nie jest kwadratowa!", justify=RIGHT)
+label_zle_dane_plik.place(x=220, y=70)
+label_zle_dane_plik.place_forget()
 
-def run_algorithm():
-    if liczba_iteracji_box.get() == '':
+
+def read_parameters():
+    if liczba_iteracji_box.get() == '':  # wczytanie paramterów
         liczba_iteracji = 10
     else:
         liczba_iteracji = int(liczba_iteracji_box.get())
@@ -89,43 +99,46 @@ def run_algorithm():
     else:
         max_dlugosc_zycia = int(max_dlugosc_zycia_box.get())
 
-    Restaurants = GraphMatrix()
+    return liczba_iteracji, wielkosc_populacji, liczba_elitarnych, liczba_najlepszych, rozmiar_sasiedztwa_elit, max_dlugosc_zycia
+
+
+def run_algorithm():
+    # odczyt paramterów
+    liczba_iteracji, wielkosc_populacji, liczba_elitarnych, liczba_najlepszych, rozmiar_sasiedztwa_elit,\
+        max_dlugosc_zycia = read_parameters()
+
+    Restaurants = GraphMatrix()  # utworzenie grafu
     truck = Truck()
     v = 40  # prędkość ciężarówki
-    Restaurants.insertVertex(Vertex(is_base=True))
-    # ---------------------------------------------------------------------
-    names = {1: "Szewska",
-             2: "Floriańska",
-             3: "Grodzka",
-             4: "Pawia",
-             5: "Jasnogórska",
-             6: "Wadowicka",
-             7: "Aleja Generała Tadeusza Bora-K",
-             8: "Stawowa",
-             9: "Pilotów",
-             10: "Mieczysława Medwieckiego",
-             11: "Podgórska",
-             12: "Wielicka",
-             13: "Opolska",
-             14: "Tadeusza Śliwiaka",
-             15: "Aleja Pokoju",
-             16: "Stanisława Stojałowskiego",
-             17: "Henryka Kamińskiego"}
+    matrix = []
+    distance_matrix = []
+    if wczytywanie.get() == 0:  # jeśli wczytujemy z ręcznie wpisanych danych
+        return 0
+    elif wczytywanie.get() == 1:  # jeśli wczytujemy z pliku
+        file = sciezka.get()
+        matrix = save_data_from_txt_to_matrix(file)
+        if is_matrix_square(matrix):
+            label_zle_dane_plik.pack_forget()
+            distance_matrix = convert_matrix_elements_to_int(matrix)
+        else:
+            label_zle_dane_plik.place(x=220, y=70)
 
-    for i in names.keys():  # utworzenie grafu dla testów
-        vertex = Vertex(Id=i, name=names[i], is_base=False)
-        if vertex not in Restaurants.list:
-            Restaurants.insertVertex(vertex)
+            print(f"Macierz z pliku '{file}' nie jest kwadratowa!")
+            return 0
 
-    for i in range(Restaurants.order()):
+    for i in range(len(matrix)):  # uzupełnienie listy wierzchołków
+        if i == 0:
+            Restaurants.insertVertex(Vertex(is_base=True))
+        else:
+            Restaurants.insertVertex(Vertex(Id=i, name=str(i)))
+
+    for i in range(Restaurants.order()):  # obliczenie czasu i dodanie wszystkich krawędzi
         for j in range(Restaurants.order()):
-            if i != j and not Restaurants.matrix[i][j]:
-                distance = round(uniform(0.3, 5), 2)  # odległość między dwoma restauracjami - od 300 metrów do 5
-                # kilometrów
-                time = round(distance / v, 2)  # obliczony czas przejazdu w godzinach dla średniej prędkości 50 km/h
-                Restaurants.insertEdge(vertex1_idx=i, vertex2_idx=j, edge=Edge(i, j, time=time, distance=distance))
-                Restaurants.insertEdge(vertex1_idx=j, vertex2_idx=i, edge=Edge(j, i, time=time, distance=distance))
-    # ---------------------------------------------------------------------
+            distance = distance_matrix[i][j]
+            time = round(distance / v, 2)
+            Restaurants.insertEdge(vertex1_idx=i, vertex2_idx=j, edge=Edge(i, j, time=time, distance=distance))
+            Restaurants.insertEdge(vertex1_idx=j, vertex2_idx=i, edge=Edge(j, i, time=time, distance=distance))
+
     solution = bee_algorythm(Restaurants, truck=truck, num_of_iterations=liczba_iteracji,
                              size_of_iteration=wielkosc_populacji, num_of_elite=liczba_elitarnych,
                              num_of_bests=liczba_najlepszych, size_of_neighbourhood=rozmiar_sasiedztwa_elit,
@@ -145,6 +158,5 @@ uruchom = Button(window, text='Uruchom', command=run_algorithm)
 uruchom.place(x=750, y=260)
 label_trasa = Label(window, text='Najlepsza znaleziona przez algorytm trasa:').place(x=20, y=235)
 label_wynik = Label(window, text='Najmniejszy znaleziony koszt:').place(x=490, y=235)
-
 
 window.mainloop()
