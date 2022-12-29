@@ -251,6 +251,7 @@ def bee_algorythm(graph: GraphMatrix, truck: Truck, num_of_iterations: int = 10,
                   num_of_elite: int = 2, num_of_bests: int = 3, size_of_neighbourhood: int = 10, max_LT: int = 3):
     solutions = []
     counter_of_iterations = 0
+    bests = []
     best = 0
     while counter_of_iterations < num_of_iterations:  # dopóki nie wykonano oczekiwanej liczby iteracji powtarzamy
         if solutions:  # w przypadku gdy coś znajduje się w liście rozwiązań - usunięcie rozwiązń, które przekroczyły
@@ -269,11 +270,16 @@ def bee_algorythm(graph: GraphMatrix, truck: Truck, num_of_iterations: int = 10,
         #     for i in range(size_of_iteration):
         #         print(solutions[i])
 
-        solutions_sorted = []  # posortowanie rozwiązań i zapamiętanie najlepszgo
+        solutions_sorted = []  # posortowanie rozwiązań i zapamiętanie najlepszego
         while len(solutions_sorted) < size_of_iteration:
             solutions_sorted.append(solutions.pop(solutions.index(min(solutions))))
         solutions = solutions_sorted.copy()
-        best = solutions[0]
+
+        if not best:
+            best = solutions[0]
+        else:
+            if solutions[0] < best:
+                best = solutions[0]
 
         elite_solutions = []  # utworzenie listy rozwiązań elitarnych
         while len(elite_solutions) < num_of_elite:
@@ -312,8 +318,9 @@ def bee_algorythm(graph: GraphMatrix, truck: Truck, num_of_iterations: int = 10,
             solution.LT += 1
 
         counter_of_iterations += 1
+        bests.append(best.cost)
 
-    return best
+    return best, bests
 
 
 def save_data_from_txt_to_matrix(file_name):

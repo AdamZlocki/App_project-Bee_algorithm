@@ -1,6 +1,11 @@
 from tkinter import filedialog
+
+import numpy as np
+
 from main import *
 from tkinter import *
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 window = Tk()
 window.title("Algorytm pszczeli")
@@ -111,9 +116,40 @@ def read_parameters():
     return liczba_iteracji, wielkosc_populacji, liczba_elitarnych, liczba_najlepszych, rozmiar_sasiedztwa_elit, max_dlugosc_zycia
 
 
+def openNewWindow():
+    wykres['state'] = DISABLED
+    newWindow = Tk()
+    newWindow.title("Wykres zmian najlepszego rozwiązania")
+    newWindow.geometry("500x500")
+
+    fig = Figure(figsize=(5, 5), dpi=100)
+
+    x = [item for item in range(1, 1 + len(list_of_bests.get()))]
+    plot1 = fig.add_subplot(111)
+
+    plot1.step(x, list_of_bests.get(), where='post')
+    plot1.grid()
+    plot1.set_xticks(np.arange(min(x), max(x)+1, 1))
+    plot1.set_yticks(np.linspace(min(list_of_bests.get()), max(list_of_bests.get()), 10))
+    plot1.set_xlabel("Liczba iteracji")
+    plot1.set_ylabel("Koszt najlepszego znalezionego w danej iteracji rozwiązania")
+
+    canvas = FigureCanvasTkAgg(fig, master=newWindow)
+    canvas.draw()
+
+    canvas.get_tk_widget().pack()
+    while True:
+        try:
+            newWindow.update()
+            newWindow.update_idletasks()
+        except TclError:
+            wykres['state'] = NORMAL
+            break
+
+
 def run_algorithm():
     # odczyt paramterów
-    liczba_iteracji, wielkosc_populacji, liczba_elitarnych, liczba_najlepszych, rozmiar_sasiedztwa_elit,\
+    liczba_iteracji, wielkosc_populacji, liczba_elitarnych, liczba_najlepszych, rozmiar_sasiedztwa_elit, \
         max_dlugosc_zycia = read_parameters()
 
     Restaurants = GraphMatrix()  # utworzenie grafu
@@ -132,6 +168,8 @@ def run_algorithm():
             names, requests, matrix = get_data(data)
             if is_matrix_square(matrix):
                 label_zle_dane.place_forget()
+                label_zle_dane_plik.place_forget()
+                label_brak_danych.place_forget()
                 distance_matrix = convert_matrix_elements_to_int(matrix)
             else:
                 label_zle_dane.place(x=330, y=67)
@@ -142,8 +180,9 @@ def run_algorithm():
         names, requests, matrix = save_data_from_txt_to_matrix(file)
         if is_matrix_square(matrix):
             label_zle_dane_plik.place_forget()
+            label_zle_dane.place_forget()
+            label_brak_danych.place_forget()
             distance_matrix = convert_matrix_elements_to_int(matrix)
-            print(distance_matrix)
         else:
             label_zle_dane_plik.place(x=220, y=70)
             return 0
@@ -163,14 +202,17 @@ def run_algorithm():
                 Restaurants.insertEdge(vertex1_idx=i, vertex2_idx=j, edge=Edge(i, j, time=time, distance=distance))
                 Restaurants.insertEdge(vertex1_idx=j, vertex2_idx=i, edge=Edge(j, i, time=time, distance=distance))
 
-        solution = bee_algorythm(Restaurants, truck=truck, num_of_iterations=liczba_iteracji,
-                                 size_of_iteration=wielkosc_populacji, num_of_elite=liczba_elitarnych,
-                                 num_of_bests=liczba_najlepszych, size_of_neighbourhood=rozmiar_sasiedztwa_elit,
-                                 max_LT=max_dlugosc_zycia)
+        solution, bests = bee_algorythm(Restaurants, truck=truck, num_of_iterations=liczba_iteracji,
+                                        size_of_iteration=wielkosc_populacji, num_of_elite=liczba_elitarnych,
+                                        num_of_bests=liczba_najlepszych,
+                                        size_of_neighbourhood=rozmiar_sasiedztwa_elit,
+                                        max_LT=max_dlugosc_zycia)
+        list_of_bests.set(bests)
         trasa.delete("1.0", END)
         trasa.insert(END, solution.route)
         wynik.delete("1.0", END)
         wynik.insert(END, solution.cost)
+        wykres['state'] = NORMAL
 
 
 trasa = Text(window, height=1, width=55)
@@ -180,7 +222,13 @@ wynik.place(x=500, y=260)
 
 uruchom = Button(window, text='Uruchom', command=run_algorithm)
 uruchom.place(x=750, y=260)
+wykres = Button(window, text='Wykres', command=openNewWindow)
+wykres.place(x=680, y=260)
+wykres['state'] = DISABLED
+
 label_trasa = Label(window, text='Najlepsza znaleziona przez algorytm trasa:').place(x=20, y=235)
 label_wynik = Label(window, text='Najmniejszy znaleziony koszt:').place(x=490, y=235)
+
+list_of_bests = Variable()
 
 window.mainloop()
