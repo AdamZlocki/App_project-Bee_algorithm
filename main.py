@@ -248,7 +248,8 @@ def neighbourhood(graph: GraphMatrix, solution: Solution, size: int = 5):
 
 
 def bee_algorythm(graph: GraphMatrix, truck: Truck, num_of_iterations: int = 10, size_of_iteration: int = 10,
-                  num_of_elite: int = 2, num_of_bests: int = 3, size_of_neighbourhood: int = 10, max_LT: int = 3):
+                  num_of_elite: int = 2, num_of_bests: int = 3, size_of_neighbourhood_elite: int = 10,
+                  size_of_neighbourhood_best: int = 5, max_LT: int = 3):
     solutions = []
     counter_of_iterations = 0
     bests = []
@@ -292,7 +293,7 @@ def bee_algorythm(graph: GraphMatrix, truck: Truck, num_of_iterations: int = 10,
         for solution in elite_solutions:  # utworzenie sąsiedztwa rozwiązań elitarnych i ewentualne zastąpienie ich ich
             # najlepszymi sąsiadami
             solution.neighbourhood = []
-            solution.neighbourhood = neighbourhood(graph=graph, solution=solution, size=size_of_neighbourhood)
+            solution.neighbourhood = neighbourhood(graph=graph, solution=solution, size=size_of_neighbourhood_elite)
             best_neighbour = solution.neighbourhood[solution.neighbourhood.index(min(solution.neighbourhood))]
             if best_neighbour < solution:
                 elite_solutions[elite_solutions.index(solution)] = best_neighbour
@@ -300,7 +301,7 @@ def bee_algorythm(graph: GraphMatrix, truck: Truck, num_of_iterations: int = 10,
         for solution in best_solutions:  # utworzenie sąsiedztwa rozwiązań najlepszych i ewentualne zastąpienie ich ich
             # najlepszymi sąsiadami
             solution.neighbourhood = []
-            solution.neighbourhood = neighbourhood(graph=graph, solution=solution, size=round(size_of_neighbourhood/2))
+            solution.neighbourhood = neighbourhood(graph=graph, solution=solution, size=size_of_neighbourhood_best)
             best_neighbour = solution.neighbourhood[solution.neighbourhood.index(min(solution.neighbourhood))]
             if best_neighbour < solution:
                 best_solutions[best_solutions.index(solution)] = best_neighbour
@@ -408,17 +409,19 @@ def main():
     # test_solution = bee_algorythm(graph=Restaurants, truck=truck)
     # print('Najlepsze znalezione rozwiązanie:\n', test_solution)
 
-    file_1 = 'Dane_1.txt'
-    file_2 = r'C:\Users\adamz\Downloads\Dane_2.txt'
-    file_3 = r'C:\Users\adamz\Downloads\Dane_3.txt'
+    # file_1 = 'Dane_1.txt'
+    # file_2 = r'C:\Users\adamz\Downloads\Dane_2.txt'
+    # file_3 = r'C:\Users\adamz\Downloads\Dane_3.txt'
+    #
+    # actual_file = file_3
+    # matrix = save_data_from_txt_to_matrix(actual_file)
+    #
+    # if is_matrix_square(matrix):
+    #     matrix = convert_matrix_elements_to_int(matrix)
+    # else:
+    #     print(f"Macierz z pliku '{actual_file}' nie jest kwadratowa!")
 
-    actual_file = file_3
-    matrix = save_data_from_txt_to_matrix(actual_file)
-
-    if is_matrix_square(matrix):
-        matrix = convert_matrix_elements_to_int(matrix)
-    else:
-        print(f"Macierz z pliku '{actual_file}' nie jest kwadratowa!")
+    return
 
 
 if __name__ == '__main__':

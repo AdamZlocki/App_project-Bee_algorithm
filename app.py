@@ -9,7 +9,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 window = Tk()
 window.title("Algorytm pszczeli")
-window.geometry("850x300")
+window.geometry("850x335")
 
 
 def insert_data_manually():
@@ -35,7 +35,7 @@ recznie.place(x=5, y=5)
 plik = Radiobutton(window, text='Z pliku', variable=wczytywanie, value=1, command=insert_data_file)
 plik.place(x=70, y=5)
 
-odleglosci = Text(window, height=10, width=40)
+odleglosci = Text(window, height=12, width=60)
 odleglosci.place(x=5, y=69)
 label_odleglosci = Label(window, text="""Podaj dane (zapotrzebowanie\noddziel ' # ', a odległości ','):""",
                          justify=LEFT).place(x=5, y=30)
@@ -54,8 +54,10 @@ liczba_najlepszych_box = Entry(window, width=10)
 liczba_najlepszych_box.place(x=720, y=125)
 rozmiar_sasiedztwa_elit_box = Entry(window, width=10)
 rozmiar_sasiedztwa_elit_box.place(x=720, y=165)
+rozmiar_sasiedztwa_najlep_box = Entry(window, width=10)
+rozmiar_sasiedztwa_najlep_box.place(x=720, y=205)
 max_dlugosc_zycia_box = Entry(window, width=10)
-max_dlugosc_zycia_box.place(x=720, y=205)
+max_dlugosc_zycia_box.place(x=720, y=245)
 
 label_liczba_iteracji = Label(window, text='Liczba iteracji (domyślnie 10):', justify=RIGHT).place(x=555, y=5)
 label_wielkosc_populacji = Label(window, text='Wielkość populacji (domyślnie 10):', justify=RIGHT).place(x=528, y=45)
@@ -63,11 +65,13 @@ label_liczba_elitarnych = Label(window, text='Liczba rozwiązań\nelitarnych (do
                                                                                                                  y=75)
 label_liczba_najlepszych = Label(window, text='Liczba rozwiązań\nnajlepszych (domyślnie 3):', justify=RIGHT).place(
     x=572, y=115)
-label_rozmiar_sasiedztwa_elit = Label(window, text='Rozmiar sąsiedztwa\nelitarnego (domyślnie 10):',
-                                      justify=RIGHT).place(x=575, y=155)
-label_max_dlugosc_zycia = Label(window, text='Maksymalna długość\nżycia rozwiązania (domyślnie 3):',
-                                justify=RIGHT).place(x=544,
-                                                     y=195)
+label_rozmiar_sasiedztwa_elit = Label(window, text='Rozmiar sąsiedztwa rozwiązań\nelitarnych (domyślnie 10):',
+                                      justify=RIGHT).place(x=555, y=155)
+label_rozmiar_sasiedztwa_najlep = Label(window, text='Rozmiar sąsiedztwa rozwiązań\nnajlepszych (domyślnie 5):',
+                                        justify=RIGHT).place(x=555, y=195)
+label_max_dlugosc_zycia = Label(window, text='Maksymalna długość życia\nrozwiązania (domyślnie 3):',
+                                justify=RIGHT).place(x=571,
+                                                     y=235)
 
 label_zle_dane_plik = Label(window, text=f"Macierz z pliku nie jest kwadratowa!", justify=RIGHT)
 label_zle_dane_plik.place(x=220, y=47)
@@ -108,12 +112,17 @@ def read_parameters():
     else:
         rozmiar_sasiedztwa_elit = int(rozmiar_sasiedztwa_elit_box.get())
 
+    if rozmiar_sasiedztwa_najlep_box.get() == '':
+        rozmiar_sasiedztwa_najlep = 5
+    else:
+        rozmiar_sasiedztwa_najlep = int(rozmiar_sasiedztwa_najlep_box.get())
+
     if max_dlugosc_zycia_box.get() == '':
         max_dlugosc_zycia = 3
     else:
         max_dlugosc_zycia = int(max_dlugosc_zycia_box.get())
 
-    return liczba_iteracji, wielkosc_populacji, liczba_elitarnych, liczba_najlepszych, rozmiar_sasiedztwa_elit, max_dlugosc_zycia
+    return liczba_iteracji, wielkosc_populacji, liczba_elitarnych, liczba_najlepszych, rozmiar_sasiedztwa_elit, rozmiar_sasiedztwa_najlep, max_dlugosc_zycia
 
 
 def openNewWindow():
@@ -129,7 +138,7 @@ def openNewWindow():
 
     plot1.step(x, list_of_bests.get(), where='post')
     plot1.grid()
-    plot1.set_xticks(np.arange(min(x), max(x)+1, 1))
+    plot1.set_xticks(np.arange(min(x), max(x) + 1, 1))
     plot1.set_yticks(np.linspace(min(list_of_bests.get()), max(list_of_bests.get()), 10))
     plot1.set_xlabel("Liczba iteracji")
     plot1.set_ylabel("Koszt najlepszego znalezionego w danej iteracji rozwiązania")
@@ -150,7 +159,7 @@ def openNewWindow():
 def run_algorithm():
     # odczyt paramterów
     liczba_iteracji, wielkosc_populacji, liczba_elitarnych, liczba_najlepszych, rozmiar_sasiedztwa_elit, \
-        max_dlugosc_zycia = read_parameters()
+        rozmiar_sasiedztwa_najlep, max_dlugosc_zycia = read_parameters()
 
     Restaurants = GraphMatrix()  # utworzenie grafu
     truck = Truck()
@@ -187,7 +196,7 @@ def run_algorithm():
             label_zle_dane_plik.place(x=220, y=70)
             return 0
     else:
-        return 0
+        return
     if distance_matrix:
         for i in range(len(matrix)):  # uzupełnienie listy wierzchołków
             if i == 0:
@@ -205,8 +214,7 @@ def run_algorithm():
         solution, bests = bee_algorythm(Restaurants, truck=truck, num_of_iterations=liczba_iteracji,
                                         size_of_iteration=wielkosc_populacji, num_of_elite=liczba_elitarnych,
                                         num_of_bests=liczba_najlepszych,
-                                        size_of_neighbourhood=rozmiar_sasiedztwa_elit,
-                                        max_LT=max_dlugosc_zycia)
+                                        size_of_neighbourhood_elite=rozmiar_sasiedztwa_elit, max_LT=max_dlugosc_zycia)
         list_of_bests.set(bests)
         trasa.delete("1.0", END)
         trasa.insert(END, solution.route)
@@ -216,18 +224,18 @@ def run_algorithm():
 
 
 trasa = Text(window, height=1, width=55)
-trasa.place(x=20, y=260)
+trasa.place(x=20, y=300)
 wynik = Text(window, height=1, width=10)
-wynik.place(x=500, y=260)
+wynik.place(x=560, y=300)
 
 uruchom = Button(window, text='Uruchom', command=run_algorithm)
-uruchom.place(x=750, y=260)
+uruchom.place(x=750, y=300)
 wykres = Button(window, text='Wykres', command=openNewWindow)
-wykres.place(x=680, y=260)
+wykres.place(x=680, y=300)
 wykres['state'] = DISABLED
 
-label_trasa = Label(window, text='Najlepsza znaleziona przez algorytm trasa:').place(x=20, y=235)
-label_wynik = Label(window, text='Najmniejszy znaleziony koszt:').place(x=490, y=235)
+label_trasa = Label(window, text='Najlepsza znaleziona przez algorytm trasa:').place(x=20, y=275)
+label_wynik = Label(window, text='Najmniejszy znaleziony koszt:').place(x=490, y=275)
 
 list_of_bests = Variable()
 
