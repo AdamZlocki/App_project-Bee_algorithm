@@ -347,7 +347,7 @@ def is_matrix_square(matrix):
 
 
 def convert_matrix_elements_to_int(matrix):
-    return [list(map(int, row)) for row in matrix]
+    return [list(map(float, row)) for row in matrix]
 
 
 def get_data(matrix):

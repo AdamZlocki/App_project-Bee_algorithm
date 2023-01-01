@@ -129,16 +129,16 @@ def openNewWindow():
     wykres['state'] = DISABLED
     newWindow = Tk()
     newWindow.title("Wykres zmian najlepszego rozwiązania")
-    newWindow.geometry("500x500")
+    newWindow.geometry("800x500")
 
-    fig = Figure(figsize=(5, 5), dpi=100)
+    fig = Figure(figsize=(12, 5), dpi=100)
 
     x = [item for item in range(1, 1 + len(list_of_bests.get()))]
     plot1 = fig.add_subplot(111)
 
     plot1.step(x, list_of_bests.get(), where='post')
     plot1.grid()
-    plot1.set_xticks(np.arange(min(x), max(x) + 1, 1))
+    plot1.set_xticks(np.arange(min(x), max(x) + 1, 2))
     plot1.set_yticks(np.linspace(min(list_of_bests.get()), max(list_of_bests.get()), 10))
     plot1.set_xlabel("Liczba iteracji")
     plot1.set_ylabel("Koszt najlepszego znalezionego w danej iteracji rozwiązania")
