@@ -346,6 +346,23 @@ def is_matrix_square(matrix):
     return True
 
 
+def is_matrix_symetrical(matrix):
+    N = len(matrix)
+    for i in range(N):
+        for j in range(N):
+            if matrix[i][j] != matrix[j][i]:
+                return False
+    return True
+
+
+def has_matrix_0_diagonal(matrix):
+    N = len(matrix)
+    for i in range(N):
+        if matrix[i][i] != 0:
+            return False
+    return True
+
+
 def convert_matrix_elements_to_int(matrix):
     return [list(map(float, row)) for row in matrix]
 

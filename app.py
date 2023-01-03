@@ -175,9 +175,43 @@ def run_algorithm():
         else:
             data = odleglosci.get("1.0", 'end-1c')
             names, requests, matrix = get_data(data)
-            if is_matrix_square(matrix):
-                distance_matrix = convert_matrix_elements_to_int(matrix)
-            else:
+            if is_matrix_square(matrix):  # macierz jest kwadratowa
+                if is_matrix_symetrical(matrix):  # macierz jest symetryczna
+                    if has_matrix_0_diagonal(matrix):  # macierz ma tylko 0 na przekątnej
+                        distance_matrix = convert_matrix_elements_to_int(matrix)
+                    else:  # macierz ma coś innego niż 0 na przekątnej
+                        ErrorWindow = ctk.CTk()
+                        ErrorWindow.title("Błędne dane!")
+                        ErrorWindow.geometry("450x120")
+                        label_zle_dane = ctk.CTkLabel(ErrorWindow, text=f"Podana macierz\nma niezerową przekątną!",
+                                                      justify=ctk.LEFT,
+                                                      font=("normal", 40),
+                                                      fg_color="transparent")
+                        label_zle_dane.pack()
+                        while True:
+                            try:
+                                ErrorWindow.update()
+                                ErrorWindow.update_idletasks()
+                            except TclError:
+                                break
+                        return
+                else:  # macierz nie jest symetryczna
+                    ErrorWindow = ctk.CTk()
+                    ErrorWindow.title("Błędne dane!")
+                    ErrorWindow.geometry("450x120")
+                    label_zle_dane = ctk.CTkLabel(ErrorWindow, text=f"Podana macierz\nnie jest symetryczna!",
+                                                  justify=ctk.LEFT,
+                                                  font=("normal", 40),
+                                                  fg_color="transparent")
+                    label_zle_dane.pack()
+                    while True:
+                        try:
+                            ErrorWindow.update()
+                            ErrorWindow.update_idletasks()
+                        except TclError:
+                            break
+                    return
+            else:   # macierz nie jest kwadratowa
                 ErrorWindow = ctk.CTk()
                 ErrorWindow.title("Błędne dane!")
                 ErrorWindow.geometry("450x120")
@@ -198,7 +232,41 @@ def run_algorithm():
         file = sciezka.get()
         names, requests, matrix = save_data_from_txt_to_matrix(file)
         if is_matrix_square(matrix):
-            distance_matrix = convert_matrix_elements_to_int(matrix)
+            if is_matrix_symetrical(matrix):  # macierz jest symetryczna
+                if has_matrix_0_diagonal(matrix):  # macierz ma tylko 0 na przekątnej
+                    distance_matrix = convert_matrix_elements_to_int(matrix)
+                else:  # macierz ma coś innego niż 0 na przekątnej
+                    ErrorWindow = ctk.CTk()
+                    ErrorWindow.title("Błędne dane!")
+                    ErrorWindow.geometry("450x120")
+                    label_zle_dane = ctk.CTkLabel(ErrorWindow, text=f"Podana macierz\nma niezerową przekątną!",
+                                                  justify=ctk.LEFT,
+                                                  font=("normal", 40),
+                                                  fg_color="transparent")
+                    label_zle_dane.pack()
+                    while True:
+                        try:
+                            ErrorWindow.update()
+                            ErrorWindow.update_idletasks()
+                        except TclError:
+                            break
+                    return
+            else:  # macierz nie jest symetryczna
+                ErrorWindow = ctk.CTk()
+                ErrorWindow.title("Błędne dane!")
+                ErrorWindow.geometry("450x120")
+                label_zle_dane = ctk.CTkLabel(ErrorWindow, text=f"Podana macierz\nnie jest symetryczna!",
+                                              justify=ctk.LEFT,
+                                              font=("normal", 40),
+                                              fg_color="transparent")
+                label_zle_dane.pack()
+                while True:
+                    try:
+                        ErrorWindow.update()
+                        ErrorWindow.update_idletasks()
+                    except TclError:
+                        break
+                return
         else:
             ErrorWindow = ctk.CTk()
             ErrorWindow.title("Błędne dane!")
