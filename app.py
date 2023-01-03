@@ -1,89 +1,80 @@
-from tkinter import filedialog
-
+import customtkinter
 import numpy as np
-
 from main import *
-from tkinter import *
+from tkinter import TclError
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import customtkinter as ctk
 
-window = Tk()
+customtkinter.set_appearance_mode("System")
+customtkinter.set_default_color_theme("dark-blue")
+
+window = ctk.CTk()
 window.title("Algorytm pszczeli")
-window.geometry("850x335")
+window.geometry("850x500")
 
 
 def insert_data_manually():
     if wczytywanie.get() == 0:
-        odleglosci['state'] = NORMAL
-        sciezka['state'] = DISABLED
+        odleglosci.configure(state="normal")
+        sciezka.configure(state="disabled")
 
 
 def insert_data_file():
     if wczytywanie.get() == 1:
-        odleglosci['state'] = DISABLED
-        sciezka['state'] = NORMAL
-        file = filedialog.askopenfilename(initialdir="/", title="Open Text file", filetypes=(("Text Files", "*.txt"),))
+        odleglosci.configure(state="disabled")
+        sciezka.configure(state="normal")
+        file = ctk.filedialog.askopenfilename(initialdir="/", title="Open Text file",
+                                              filetypes=(("Text Files", "*.txt"),))
         if sciezka.get() != '':
-            sciezka.delete(0, END)
-        sciezka.insert(END, file)
+            sciezka.delete(0, "end")
+        print(file)
+        sciezka.insert("end", file)
 
 
-wczytywanie = IntVar()
+wczytywanie = ctk.IntVar()
 wczytywanie.set(0)
-recznie = Radiobutton(window, text='Ręcznie', variable=wczytywanie, value=0, command=insert_data_manually)
+recznie = ctk.CTkRadioButton(window, text='Ręcznie', variable=wczytywanie, value=0, command=insert_data_manually)
 recznie.place(x=5, y=5)
-plik = Radiobutton(window, text='Z pliku', variable=wczytywanie, value=1, command=insert_data_file)
-plik.place(x=70, y=5)
+plik = ctk.CTkRadioButton(window, text='Z pliku', variable=wczytywanie, value=1, command=insert_data_file)
+plik.place(x=90, y=5)
 
-odleglosci = Text(window, height=12, width=60)
+odleglosci = ctk.CTkTextbox(window, height=320, width=565)
 odleglosci.place(x=5, y=69)
-label_odleglosci = Label(window, text="""Podaj dane (zapotrzebowanie\noddziel ' # ', a odległości ','):""",
-                         justify=LEFT).place(x=5, y=30)
+label_odleglosci = ctk.CTkLabel(window, text="""Podaj dane (zapotrzebowanie\noddziel ' # ', a odległości ','):""",
+                                justify=ctk.LEFT).place(x=5, y=30)
 
-label_sciezka = Label(window, text='Podaj ścieżkę do pliku .txt:').place(x=220, y=5)
-sciezka = Entry(window, width=40, state=DISABLED)
+label_sciezka = ctk.CTkLabel(window, text='Podaj ścieżkę do pliku .txt:').place(x=220, y=5)
+sciezka = ctk.CTkEntry(window, width=350, state=ctk.DISABLED)
 sciezka.place(x=220, y=27)
 
-liczba_iteracji_box = Entry(window, width=10)
-liczba_iteracji_box.place(x=720, y=5)
-wielkosc_populacji_box = Entry(window, width=10)
-wielkosc_populacji_box.place(x=720, y=45)
-liczba_elitarnych_box = Entry(window, width=10)
-liczba_elitarnych_box.place(x=720, y=85)
-liczba_najlepszych_box = Entry(window, width=10)
-liczba_najlepszych_box.place(x=720, y=125)
-rozmiar_sasiedztwa_elit_box = Entry(window, width=10)
-rozmiar_sasiedztwa_elit_box.place(x=720, y=165)
-rozmiar_sasiedztwa_najlep_box = Entry(window, width=10)
-rozmiar_sasiedztwa_najlep_box.place(x=720, y=205)
-max_dlugosc_zycia_box = Entry(window, width=10)
-max_dlugosc_zycia_box.place(x=720, y=245)
+liczba_iteracji_box = ctk.CTkEntry(window, width=40, placeholder_text="10")
+liczba_iteracji_box.place(x=780, y=27)
+wielkosc_populacji_box = ctk.CTkEntry(window, width=40, placeholder_text="10")
+wielkosc_populacji_box.place(x=780, y=67)
+liczba_elitarnych_box = ctk.CTkEntry(window, width=40, placeholder_text="2")
+liczba_elitarnych_box.place(x=780, y=107)
+liczba_najlepszych_box = ctk.CTkEntry(window, width=40, placeholder_text="3")
+liczba_najlepszych_box.place(x=780, y=147)
+rozmiar_sasiedztwa_elit_box = ctk.CTkEntry(window, width=40, placeholder_text="10")
+rozmiar_sasiedztwa_elit_box.place(x=780, y=187)
+rozmiar_sasiedztwa_najlep_box = ctk.CTkEntry(window, width=40, placeholder_text="5")
+rozmiar_sasiedztwa_najlep_box.place(x=780, y=227)
+max_dlugosc_zycia_box = ctk.CTkEntry(window, width=40, placeholder_text="3")
+max_dlugosc_zycia_box.place(x=780, y=267)
 
-label_liczba_iteracji = Label(window, text='Liczba iteracji (domyślnie 10):', justify=RIGHT).place(x=555, y=5)
-label_wielkosc_populacji = Label(window, text='Wielkość populacji (domyślnie 10):', justify=RIGHT).place(x=528, y=45)
-label_liczba_elitarnych = Label(window, text='Liczba rozwiązań\nelitarnych (domyślnie 2):', justify=RIGHT).place(x=580,
-                                                                                                                 y=75)
-label_liczba_najlepszych = Label(window, text='Liczba rozwiązań\nnajlepszych (domyślnie 3):', justify=RIGHT).place(
-    x=572, y=115)
-label_rozmiar_sasiedztwa_elit = Label(window, text='Rozmiar sąsiedztwa rozwiązań\nelitarnych (domyślnie 10):',
-                                      justify=RIGHT).place(x=555, y=155)
-label_rozmiar_sasiedztwa_najlep = Label(window, text='Rozmiar sąsiedztwa rozwiązań\nnajlepszych (domyślnie 5):',
-                                        justify=RIGHT).place(x=555, y=195)
-label_max_dlugosc_zycia = Label(window, text='Maksymalna długość życia\nrozwiązania (domyślnie 3):',
-                                justify=RIGHT).place(x=571,
-                                                     y=235)
-
-label_zle_dane_plik = Label(window, text=f"Macierz z pliku nie jest kwadratowa!", justify=RIGHT)
-label_zle_dane_plik.place(x=220, y=47)
-label_zle_dane_plik.place_forget()
-
-label_zle_dane = Label(window, text=f"Podana macierz\nnie jest kwadratowa!", justify=LEFT)
-label_zle_dane.place(x=330, y=67)
-label_zle_dane.place_forget()
-
-label_brak_danych = Label(window, text=f"Podaj dane!", justify=LEFT)
-label_brak_danych.place(x=330, y=67)
-label_brak_danych.place_forget()
+label_liczba_iteracji = ctk.CTkLabel(window, text='Liczba iteracji:', justify=ctk.RIGHT).place(x=687, y=27)
+label_wielkosc_populacji = ctk.CTkLabel(window, text='Wielkość populacji:', justify=ctk.RIGHT).place(x=660, y=67)
+label_liczba_elitarnych = ctk.CTkLabel(window, text='Liczba rozwiązań elitarnych:', justify=ctk.RIGHT).place(x=608,
+                                                                                                             y=107)
+label_liczba_najlepszych = ctk.CTkLabel(window, text='Liczba rozwiązań najlepszych:', justify=ctk.RIGHT).place(x=597,
+                                                                                                               y=147)
+label_rozmiar_sasiedztwa_elit = ctk.CTkLabel(window, text='Rozmiar sąsiedztwa\nrozwiązań elitarnych:',
+                                             justify=ctk.RIGHT).place(x=649, y=187)
+label_rozmiar_sasiedztwa_najlep = ctk.CTkLabel(window, text='Rozmiar sąsiedztwa\nrozwiązań najlepszych:',
+                                               justify=ctk.RIGHT).place(x=639, y=227)
+label_max_dlugosc_zycia = ctk.CTkLabel(window, text='Maksymalna długość\nżycia rozwiązania:', justify=ctk.RIGHT).place(
+    x=648, y=267)
 
 
 def read_parameters():
@@ -126,8 +117,8 @@ def read_parameters():
 
 
 def openNewWindow():
-    wykres['state'] = DISABLED
-    newWindow = Tk()
+    wykres.configure(state="disabled")
+    newWindow = ctk.CTk()
     newWindow.title("Wykres zmian najlepszego rozwiązania")
     newWindow.geometry("800x500")
 
@@ -152,14 +143,14 @@ def openNewWindow():
             newWindow.update()
             newWindow.update_idletasks()
         except TclError:
-            wykres['state'] = NORMAL
+            wykres.configure(state="normal")
             break
 
 
 def run_algorithm():
     # odczyt paramterów
     liczba_iteracji, wielkosc_populacji, liczba_elitarnych, liczba_najlepszych, rozmiar_sasiedztwa_elit, \
-        rozmiar_sasiedztwa_najlep, max_dlugosc_zycia = read_parameters()
+    rozmiar_sasiedztwa_najlep, max_dlugosc_zycia = read_parameters()
 
     Restaurants = GraphMatrix()  # utworzenie grafu
     truck = Truck()
@@ -169,32 +160,61 @@ def run_algorithm():
     names = []
     requests = []
     if wczytywanie.get() == 0:  # jeśli wczytujemy z ręcznie wpisanych danych
-        if odleglosci.get("1.0", END) == '\n':
-            label_brak_danych.place(x=330, y=67)
+        if odleglosci.get("1.0", ctk.END) == '\n':
+            ErrorWindow = ctk.CTk()
+            ErrorWindow.title("Brak danych!")
+            ErrorWindow.geometry("250x100")
+            label_brak_danych = ctk.CTkLabel(ErrorWindow, text=f"Podaj dane!", justify=ctk.LEFT, font=("normal", 40),
+                                             fg_color="transparent")
+            label_brak_danych.pack()
+            while True:
+                try:
+                    ErrorWindow.update()
+                    ErrorWindow.update_idletasks()
+                except TclError:
+                    break
         else:
-            label_brak_danych.place_forget()
             data = odleglosci.get("1.0", 'end-1c')
             names, requests, matrix = get_data(data)
             if is_matrix_square(matrix):
-                label_zle_dane.place_forget()
-                label_zle_dane_plik.place_forget()
-                label_brak_danych.place_forget()
                 distance_matrix = convert_matrix_elements_to_int(matrix)
             else:
-                label_zle_dane.place(x=330, y=67)
-                return 0
+                ErrorWindow = ctk.CTk()
+                ErrorWindow.title("Błędne dane!")
+                ErrorWindow.geometry("450x120")
+                label_zle_dane = ctk.CTkLabel(ErrorWindow, text=f"Podana macierz\nnie jest kwadratowa!",
+                                              justify=ctk.LEFT,
+                                              font=("normal", 40),
+                                              fg_color="transparent")
+                label_zle_dane.pack()
+                while True:
+                    try:
+                        ErrorWindow.update()
+                        ErrorWindow.update_idletasks()
+                    except TclError:
+                        break
+                return
 
     elif wczytywanie.get() == 1:  # jeśli wczytujemy z pliku
         file = sciezka.get()
         names, requests, matrix = save_data_from_txt_to_matrix(file)
         if is_matrix_square(matrix):
-            label_zle_dane_plik.place_forget()
-            label_zle_dane.place_forget()
-            label_brak_danych.place_forget()
             distance_matrix = convert_matrix_elements_to_int(matrix)
         else:
-            label_zle_dane_plik.place(x=220, y=70)
-            return 0
+            ErrorWindow = ctk.CTk()
+            ErrorWindow.title("Błędne dane!")
+            ErrorWindow.geometry("450x120")
+            label_zle_dane_plik = ctk.CTkLabel(window, text=f"Macierz z pliku\nnie jest kwadratowa!", justify=ctk.LEFT,
+                                               font=("normal", 40),
+                                               fg_color="transparent")
+            label_zle_dane_plik.pack()
+            while True:
+                try:
+                    ErrorWindow.update()
+                    ErrorWindow.update_idletasks()
+                except TclError:
+                    break
+            return
     else:
         return
     if distance_matrix:
@@ -216,27 +236,27 @@ def run_algorithm():
                                         num_of_bests=liczba_najlepszych,
                                         size_of_neighbourhood_elite=rozmiar_sasiedztwa_elit, max_LT=max_dlugosc_zycia)
         list_of_bests.set(bests)
-        trasa.delete("1.0", END)
-        trasa.insert(END, solution.route)
-        wynik.delete("1.0", END)
-        wynik.insert(END, solution.cost)
-        wykres['state'] = NORMAL
+        trasa.delete("1.0", ctk.END)
+        trasa.insert(ctk.END, solution.route)
+        wynik.delete("1.0", ctk.END)
+        wynik.insert(ctk.END, solution.cost)
+        wykres.configure(state="normal")
 
 
-trasa = Text(window, height=1, width=55)
-trasa.place(x=20, y=300)
-wynik = Text(window, height=1, width=10)
-wynik.place(x=560, y=300)
+trasa = ctk.CTkTextbox(window, height=1, width=250)
+trasa.place(x=20, y=450)
+wynik = ctk.CTkTextbox(window, height=1, width=70)
+wynik.place(x=300, y=450)
 
-uruchom = Button(window, text='Uruchom', command=run_algorithm)
-uruchom.place(x=750, y=300)
-wykres = Button(window, text='Wykres', command=openNewWindow)
-wykres.place(x=680, y=300)
-wykres['state'] = DISABLED
+uruchom = ctk.CTkButton(window, height=40, fg_color="green", text='Uruchom', command=run_algorithm)
+uruchom.place(x=680, y=440)
+wykres = ctk.CTkButton(window, height=40, text='Wykres', command=openNewWindow)
+wykres.place(x=680, y=370)
+wykres.configure(state="disabled")
 
-label_trasa = Label(window, text='Najlepsza znaleziona przez algorytm trasa:').place(x=20, y=275)
-label_wynik = Label(window, text='Najmniejszy znaleziony koszt:').place(x=490, y=275)
+label_trasa = ctk.CTkLabel(window, text='Najlepsza znaleziona przez algorytm trasa:').place(x=20, y=420)
+label_wynik = ctk.CTkLabel(window, text='Najmniejszy znaleziony koszt:').place(x=300, y=420)
 
-list_of_bests = Variable()
+list_of_bests = ctk.Variable()
 
 window.mainloop()
