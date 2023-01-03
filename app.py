@@ -1,4 +1,3 @@
-import customtkinter
 import numpy as np
 from main import *
 from tkinter import TclError
@@ -6,8 +5,8 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import customtkinter as ctk
 
-customtkinter.set_appearance_mode("System")
-customtkinter.set_default_color_theme("dark-blue")
+ctk.set_appearance_mode("System")
+ctk.set_default_color_theme("dark-blue")
 
 window = ctk.CTk()
 window.title("Algorytm pszczeli")
