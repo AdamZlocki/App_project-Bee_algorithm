@@ -160,9 +160,12 @@ def run_algorithm():
     requests = []
     if wczytywanie.get() == 0:  # jeśli wczytujemy z ręcznie wpisanych danych
         if odleglosci.get("1.0", ctk.END) == '\n':
-            ErrorWindow = ctk.CTk()
+            # ErrorWindow = ctk.CTk()
+            ErrorWindow = ctk.CTkToplevel(window)
             ErrorWindow.title("Brak danych!")
             ErrorWindow.geometry("250x100")
+            # window.withdraw()
+            ErrorWindow.grab_set()
             label_brak_danych = ctk.CTkLabel(ErrorWindow, text=f"Podaj dane!", justify=ctk.LEFT, font=("normal", 40),
                                              fg_color="transparent")
             label_brak_danych.pack()
@@ -171,6 +174,7 @@ def run_algorithm():
                     ErrorWindow.update()
                     ErrorWindow.update_idletasks()
                 except TclError:
+                    # window.deiconify()
                     break
         else:
             data = odleglosci.get("1.0", 'end-1c')

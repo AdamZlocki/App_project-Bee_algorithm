@@ -155,7 +155,10 @@ class GraphMatrix:
 def Target_funtion(route, edges, w=2.68, p=20):  # funkcja obliczająca funkcję celu; w = koszt paliwa za przejechanie
     # jednego kilometra, p = godzionwe wynagordzenie kierowcy, penalty = kara
     cost = 0
-    penalty = 10 * (route.count(0) - 2)
+    if route.count(0) - 2 > 0:
+        penalty = 10 * (route.count(0) - 2)
+    else:
+        penalty = 0
     for edge in edges:
         cost += edge.distance * w + edge.time * p
     cost += penalty
@@ -358,7 +361,7 @@ def is_matrix_symetrical(matrix):
 def has_matrix_0_diagonal(matrix):
     N = len(matrix)
     for i in range(N):
-        if matrix[i][i] != 0:
+        if matrix[i][i] != '0':
             return False
     return True
 
