@@ -184,9 +184,10 @@ def run_algorithm():
                     if has_matrix_0_diagonal(matrix):  # macierz ma tylko 0 na przekątnej
                         distance_matrix = convert_matrix_elements_to_int(matrix)
                     else:  # macierz ma coś innego niż 0 na przekątnej
-                        ErrorWindow = ctk.CTk()
+                        ErrorWindow = ctk.CTkToplevel(window)
                         ErrorWindow.title("Błędne dane!")
                         ErrorWindow.geometry("450x120")
+                        ErrorWindow.grab_set()
                         label_zle_dane = ctk.CTkLabel(ErrorWindow, text=f"Podana macierz\nma niezerową przekątną!",
                                                       justify=ctk.LEFT,
                                                       font=("normal", 40),
@@ -200,9 +201,10 @@ def run_algorithm():
                                 break
                         return
                 else:  # macierz nie jest symetryczna
-                    ErrorWindow = ctk.CTk()
+                    ErrorWindow = ctk.CTkToplevel(window)
                     ErrorWindow.title("Błędne dane!")
                     ErrorWindow.geometry("450x120")
+                    ErrorWindow.grab_set()
                     label_zle_dane = ctk.CTkLabel(ErrorWindow, text=f"Podana macierz\nnie jest symetryczna!",
                                                   justify=ctk.LEFT,
                                                   font=("normal", 40),
@@ -216,9 +218,10 @@ def run_algorithm():
                             break
                     return
             else:   # macierz nie jest kwadratowa
-                ErrorWindow = ctk.CTk()
+                ErrorWindow = ctk.CTkToplevel(window)
                 ErrorWindow.title("Błędne dane!")
                 ErrorWindow.geometry("450x120")
+                ErrorWindow.grab_set()
                 label_zle_dane = ctk.CTkLabel(ErrorWindow, text=f"Podana macierz\nnie jest kwadratowa!",
                                               justify=ctk.LEFT,
                                               font=("normal", 40),
@@ -240,9 +243,10 @@ def run_algorithm():
                 if has_matrix_0_diagonal(matrix):  # macierz ma tylko 0 na przekątnej
                     distance_matrix = convert_matrix_elements_to_int(matrix)
                 else:  # macierz ma coś innego niż 0 na przekątnej
-                    ErrorWindow = ctk.CTk()
+                    ErrorWindow = ctk.CTkToplevel(window)
                     ErrorWindow.title("Błędne dane!")
                     ErrorWindow.geometry("450x120")
+                    ErrorWindow.grab_set()
                     label_zle_dane = ctk.CTkLabel(ErrorWindow, text=f"Podana macierz\nma niezerową przekątną!",
                                                   justify=ctk.LEFT,
                                                   font=("normal", 40),
@@ -256,9 +260,10 @@ def run_algorithm():
                             break
                     return
             else:  # macierz nie jest symetryczna
-                ErrorWindow = ctk.CTk()
+                ErrorWindow = ctk.CTkToplevel(window)
                 ErrorWindow.title("Błędne dane!")
                 ErrorWindow.geometry("450x120")
+                ErrorWindow.grab_set()
                 label_zle_dane = ctk.CTkLabel(ErrorWindow, text=f"Podana macierz\nnie jest symetryczna!",
                                               justify=ctk.LEFT,
                                               font=("normal", 40),
@@ -272,9 +277,10 @@ def run_algorithm():
                         break
                 return
         else:
-            ErrorWindow = ctk.CTk()
+            ErrorWindow = ctk.CTkToplevel(window)
             ErrorWindow.title("Błędne dane!")
             ErrorWindow.geometry("450x120")
+            ErrorWindow.grab_set()
             label_zle_dane_plik = ctk.CTkLabel(window, text=f"Macierz z pliku\nnie jest kwadratowa!", justify=ctk.LEFT,
                                                font=("normal", 40),
                                                fg_color="transparent")
