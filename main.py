@@ -152,7 +152,7 @@ class GraphMatrix:
         return result
 
 
-def Target_funtion(route, edges, w=2.68, p=20):  # funkcja obliczająca funkcję celu; w = koszt paliwa za przejechanie
+def Target_funtion(route, edges, w=2.68, p=30):  # funkcja obliczająca funkcję celu; w = koszt paliwa za przejechanie
     # jednego kilometra, p = godzionwe wynagordzenie kierowcy, penalty = kara
     cost = 0
     if route.count(0) - 2 > 0:
